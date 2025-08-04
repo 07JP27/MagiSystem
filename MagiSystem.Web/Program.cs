@@ -1,7 +1,8 @@
 using MagiSystem.Web.Components;
-using MagiSystem.Web.Services;
 using MagiSystem.Core;
 using Microsoft.Extensions.AI;
+using Azure.AI.OpenAI;
+using Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,19 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 // Register AI services
-builder.Services.AddSingleton<IChatClient, MockChatClient>();
+// Azure OpenAI configuration - in production, use configuration/environment variables
+builder.Services.AddSingleton<IChatClient>(_ =>
+{
+    var endpoint = builder.Configuration["AzureOpenAI:Endpoint"] ?? "https://your-resource.openai.azure.com/";
+    var apiKey = builder.Configuration["AzureOpenAI:ApiKey"] ?? "your-api-key";
+    var deploymentName = builder.Configuration["AzureOpenAI:DeploymentName"] ?? "gpt-35-turbo";
+    
+    var azureClient = new AzureOpenAIClient(new Uri(endpoint), new AzureKeyCredential(apiKey));
+    var openAIChatClient = azureClient.GetChatClient(deploymentName);
+    
+    // Convert OpenAI ChatClient to Microsoft.Extensions.AI.IChatClient
+    return openAIChatClient.AsIChatClient();
+});
 builder.Services.AddScoped<MagiService>();
 
 var app = builder.Build();

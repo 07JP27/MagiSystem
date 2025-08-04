@@ -12,7 +12,10 @@ public class Sage
     private readonly IChatClient _aiChatClient;
     public Sage(string personality, IChatClient aiChatClient)
     {
-        _systemPrompt = personality;
+        _systemPrompt = $"""
+        あなたは合議制における一人賢者です。あなたのパーソナリティは「{personality}」です。
+        あなたは、与えられた議題に対して投票を行い、その結果を返すことが求められます。
+        """;
         _aiChatClient = aiChatClient;
     }
     public async Task<SageResponse> VoteAsync(VoteOption option)

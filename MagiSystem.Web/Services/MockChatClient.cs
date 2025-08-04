@@ -38,10 +38,30 @@ public class MockChatClient : IChatClient
         // No resources to dispose
     }
 
-    public Task<ChatResponse> GetResponseAsync(IEnumerable<ChatMessage> chatMessages, ChatOptions? options = null, CancellationToken cancellationToken = default)
+    public async Task<ChatResponse> GetResponseAsync(IEnumerable<ChatMessage> chatMessages, ChatOptions? options = null, CancellationToken cancellationToken = default)
     {
         Console.WriteLine("GetResponseAsync (non-generic) was called");
-        throw new NotImplementedException("Use GetResponseAsync<T> instead");
+        
+        // Simulate some processing time
+        await Task.Delay(500, cancellationToken);
+        
+        // Extract the system prompt to understand the sage's personality
+        var systemMessage = chatMessages.FirstOrDefault(m => m.Role == ChatRole.System)?.Text ?? "";
+        var userMessage = chatMessages.FirstOrDefault(m => m.Role == ChatRole.User)?.Text ?? "";
+        
+        // Mock decision making based on personality
+        var (vote, reason) = GenerateMockResponse(systemMessage, userMessage);
+        var sageResponse = new SageResponse(vote, reason);
+        var jsonResponse = System.Text.Json.JsonSerializer.Serialize(sageResponse);
+        
+        // Create a ChatResponse with proper finish reason
+        var chatMessage = new ChatMessage(ChatRole.Assistant, jsonResponse);
+        var chatResponse = new ChatResponse(chatMessage)
+        {
+            FinishReason = ChatFinishReason.Stop
+        };
+        
+        return chatResponse;
     }
 
     // This is the main method used by MagiService
@@ -57,14 +77,15 @@ public class MockChatClient : IChatClient
         // Mock decision making based on personality
         var (vote, reason) = GenerateMockResponse(systemMessage, userMessage);
         
-        if (typeof(TResult) == typeof(SageResponse))
-        {
-            var response = new SageResponse(vote, reason);
-            var mockResponse = new MockAIResponse<SageResponse>(response);
-            return (TResult)(object)mockResponse;
-        }
+        // Create the actual SageResponse
+        var sageResponse = new SageResponse(vote, reason);
         
-        throw new NotSupportedException($"Type {typeof(TResult)} is not supported");
+        // Create a mock AI response wrapper that matches the expected interface
+        var mockResponse = new MockAIResponse<SageResponse>(sageResponse);
+        
+        // The interface expects us to return TResult, but TResult should be the response wrapper type
+        // that contains the SageResponse, not SageResponse itself
+        return (TResult)(object)mockResponse;
     }
 
     public IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(IEnumerable<ChatMessage> chatMessages, ChatOptions? options = null, CancellationToken cancellationToken = default)

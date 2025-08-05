@@ -9,7 +9,7 @@
 MagiSystemは、それぞれ異なる思考パターンを持つ3つのAIエージェント（賢者）の集合知を活用し、民主的な投票を通じて意思決定を支援します。各AIは独自の視点から与えられた議題を分析し投票を行い、多数決により最終決定が下されます。
 
 ### 3人の賢者
-
+デフォルトでは以下の3つのパーソナリティをもつ賢者が用意されています：
 - **🧠 論理型**: 論理的・客観的な分析に基づいて判断を行い、データとエビデンスを重視します
 - **🛡️ 慎重型**: 慎重で保守的、リスク回避を重視したアプローチで、安全性と安定性を最優先に考えます
 - **❤️ 感情型**: 感情的・直感的な判断を提供し、人間らしい視点と妥協案を大切にします
@@ -56,8 +56,8 @@ using System.Collections.ObjectModel;
 // Azure OpenAI クライアントを設定
 var azureClient = new AzureOpenAIClient(
     new Uri("https://your-resource.openai.azure.com/"),
-    new AzureKeyCredential("your-api-key"));
-var chatClient = azureClient.GetChatClient("gpt-35-turbo").AsIChatClient();
+    new AzureKeyCredential("your-api-key")); // DefaultAzureCredentialも使用可能
+var chatClient = azureClient.GetChatClient("gpt-4o").AsIChatClient();
 ```
 
 #### 4. MagiServiceインスタンスの作成

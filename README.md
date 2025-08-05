@@ -21,51 +21,93 @@ MagiSystem leverages the collective intelligence of three AI agents (Sages), eac
 - .NET 8.0 SDK
 - Azure OpenAI Service account with API access
 
-### Installation
+### Using MagiService
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/07JP27/MagiSystem.git
-   cd MagiSystem
-   ```
+The MagiSystem.Core library provides core services to integrate three-sage decision-making functionality into your applications.
 
-2. **Configure Azure OpenAI settings**
-   
-   Edit `MagiSystem.Web/appsettings.json` or set environment variables:
-   ```json
-   {
-     "AzureOpenAI": {
-       "Endpoint": "https://your-resource.openai.azure.com/",
-       "ApiKey": "your-api-key",
-       "DeploymentName": "gpt-35-turbo"
-     }
-   }
-   ```
+#### 1. Add Project Reference
 
-   Or use environment variables:
-   ```bash
-   export AzureOpenAI__Endpoint="https://your-resource.openai.azure.com/"
-   export AzureOpenAI__ApiKey="your-api-key"
-   export AzureOpenAI__DeploymentName="gpt-35-turbo"
-   ```
+```bash
+# Add project reference
+dotnet add reference path/to/MagiSystem.Core
 
-3. **Build and run**
-   ```bash
-   dotnet build
-   cd MagiSystem.Web
-   dotnet run
-   ```
+# Or use as NuGet package (to be published in the future)
+# dotnet add package MagiSystem.Core
+```
 
-4. **Access the application**
-   
-   Open your browser and navigate to `https://localhost:5001` (or the URL shown in the terminal).
+#### 2. Configure Azure OpenAI Client
 
-### Usage
+```csharp
+using Microsoft.Extensions.AI;
+using MagiSystem.Core;
 
-1. **Enter your topic**: Describe the decision you need to make
-2. **Set voting criteria**: Define what constitutes a "Yes" and "No" vote
-3. **Execute voting**: The three MAGI will analyze and vote on your topic
-4. **Review results**: See the majority decision along with detailed reasoning from each sage
+// Configure Azure OpenAI client
+var chatClient = new AzureOpenAIClient(
+    new Uri("https://your-resource.openai.azure.com/"),
+    new AzureKeyCredential("your-api-key"))
+    .AsChatClient("gpt-35-turbo");
+```
+
+#### 3. Create MagiService Instance
+
+```csharp
+// Create MagiService with default three sages
+var magiService = new MagiService(chatClient);
+
+// Or specify custom sages
+var customSages = new List<Sage>
+{
+    new Sage("Data-driven logical judgment", chatClient),
+    new Sage("Risk-management focused cautious judgment", chatClient),
+    new Sage("User-experience focused emotional judgment", chatClient)
+};
+var magiService = new MagiService(chatClient, customSages);
+```
+
+#### 4. Execute Voting
+
+```csharp
+// Create vote option
+var voteOption = new VoteOption(
+    Topic: "Should we include new feature A in the next release?",
+    YesCriteria: "Provides user value and is technically feasible",
+    NoCriteria: "High risk and insufficient development resources"
+);
+
+// Execute voting by three sages
+MagiResponse response = await magiService.MajorityVoteAsync(voteOption);
+
+// Check results
+Console.WriteLine($"Final Decision: {response.FinalDecision}");
+Console.WriteLine($"Yes votes: {response.CountOfYes}, No votes: {response.CountOfNo}");
+
+// Display reasons for each sage
+Console.WriteLine("Reasons for Yes votes:");
+foreach (var reason in response.YesReasons)
+{
+    Console.WriteLine($"- {reason}");
+}
+
+Console.WriteLine("Reasons for No votes:");
+foreach (var reason in response.NoReasons)
+{
+    Console.WriteLine($"- {reason}");
+}
+```
+
+### Sample Web Application
+
+If you want to see the actual functionality in action, you can run the included web application:
+
+```bash
+git clone https://github.com/07JP27/MagiSystem.git
+cd MagiSystem/MagiSystem.Web
+
+# Configure Azure OpenAI settings in appsettings.json
+dotnet run
+```
+
+Access `https://localhost:5001` in your browser to use the web interface.
 
 ## Customization
 

@@ -21,51 +21,93 @@ MagiSystemは、それぞれ異なる思考パターンを持つ3つのAIエー�
 - .NET 8.0 SDK
 - Azure OpenAI Service アカウントとAPI アクセス
 
-### インストール
+### MagiServiceの利用方法
 
-1. **リポジトリのクローン**
-   ```bash
-   git clone https://github.com/07JP27/MagiSystem.git
-   cd MagiSystem
-   ```
+MagiSystem.Coreライブラリは、あなたのアプリケーションに3つの賢者による意思決定機能を統合するためのコアサービスを提供します。
 
-2. **Azure OpenAI設定の構成**
-   
-   `MagiSystem.Web/appsettings.json` を編集するか、環境変数を設定します：
-   ```json
-   {
-     "AzureOpenAI": {
-       "Endpoint": "https://your-resource.openai.azure.com/",
-       "ApiKey": "your-api-key",
-       "DeploymentName": "gpt-35-turbo"
-     }
-   }
-   ```
+#### 1. プロジェクトへの参照追加
 
-   または環境変数を使用：
-   ```bash
-   export AzureOpenAI__Endpoint="https://your-resource.openai.azure.com/"
-   export AzureOpenAI__ApiKey="your-api-key"
-   export AzureOpenAI__DeploymentName="gpt-35-turbo"
-   ```
+```bash
+# プロジェクトの参照を追加
+dotnet add reference path/to/MagiSystem.Core
 
-3. **ビルドと実行**
-   ```bash
-   dotnet build
-   cd MagiSystem.Web
-   dotnet run
-   ```
+# または、NuGetパッケージとして利用する場合（将来的に公開される予定）
+# dotnet add package MagiSystem.Core
+```
 
-4. **アプリケーションへのアクセス**
-   
-   ブラウザで `https://localhost:5001`（またはターミナルに表示されるURL）にアクセスします。
+#### 2. Azure OpenAI クライアントの設定
 
-### 使用方法
+```csharp
+using Microsoft.Extensions.AI;
+using MagiSystem.Core;
 
-1. **議題の入力**: 決定が必要な議題を記述します
-2. **投票基準の設定**: 「Yes」と「No」の判断基準を定義します
-3. **投票の実行**: 3つのMAGIがあなたの議題を分析し投票を行います
-4. **結果の確認**: 各賢者の詳細な理由と共に多数決による決定を確認します
+// Azure OpenAI クライアントを設定
+var chatClient = new AzureOpenAIClient(
+    new Uri("https://your-resource.openai.azure.com/"),
+    new AzureKeyCredential("your-api-key"))
+    .AsChatClient("gpt-35-turbo");
+```
+
+#### 3. MagiServiceインスタンスの作成
+
+```csharp
+// デフォルトの3つの賢者でMagiServiceを作成
+var magiService = new MagiService(chatClient);
+
+// または、カスタム賢者を指定
+var customSages = new List<Sage>
+{
+    new Sage("データ重視の論理的判断", chatClient),
+    new Sage("リスク管理を重視する慎重な判断", chatClient),
+    new Sage("ユーザー体験を重視する感情的判断", chatClient)
+};
+var magiService = new MagiService(chatClient, customSages);
+```
+
+#### 4. 投票の実行
+
+```csharp
+// 投票オプションを作成
+var voteOption = new VoteOption(
+    Topic: "新機能Aを次のリリースに含めるべきか？",
+    YesCriteria: "ユーザーにとって価値があり、技術的に実現可能である",
+    NoCriteria: "リスクが高く、開発リソースが不足している"
+);
+
+// 3つの賢者による投票を実行
+MagiResponse response = await magiService.MajorityVoteAsync(voteOption);
+
+// 結果の確認
+Console.WriteLine($"最終決定: {response.FinalDecision}");
+Console.WriteLine($"Yes票: {response.CountOfYes}, No票: {response.CountOfNo}");
+
+// 各賢者の理由を表示
+Console.WriteLine("Yes票の理由:");
+foreach (var reason in response.YesReasons)
+{
+    Console.WriteLine($"- {reason}");
+}
+
+Console.WriteLine("No票の理由:");
+foreach (var reason in response.NoReasons)  
+{
+    Console.WriteLine($"- {reason}");
+}
+```
+
+### サンプルWebアプリケーション
+
+実際の動作を確認したい場合は、付属のWebアプリケーションを実行できます：
+
+```bash
+git clone https://github.com/07JP27/MagiSystem.git
+cd MagiSystem/MagiSystem.Web
+
+# appsettings.jsonでAzure OpenAI設定を構成
+dotnet run
+```
+
+ブラウザで `https://localhost:5001` にアクセスしてWebインターフェースを使用できます。
 
 ## カスタマイズ
 

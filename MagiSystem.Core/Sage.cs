@@ -13,8 +13,8 @@ public class Sage
     public Sage(string personality, IChatClient aiChatClient)
     {
         _systemPrompt = $"""
-        あなたは合議制における一人賢者です。あなたのパーソナリティは「{personality}」です。
-        あなたは、与えられた議題に対して投票を行い、その結果を返すことが求められます。
+        あなたは合議制における投票権を持つ一人の賢者です。与えられた議題に対して投票を行うことが求められます。
+        あなたのパーソナリティは「{personality}」です。必ずこのパーソナリティに従って行動してください。
         """;
         _aiChatClient = aiChatClient;
     }

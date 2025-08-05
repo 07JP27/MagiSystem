@@ -51,6 +51,7 @@ using Microsoft.Extensions.AI;
 using MagiSystem.Core;
 using Azure.AI.OpenAI;
 using Azure;
+using System.Collections.ObjectModel;
 
 // Configure Azure OpenAI client
 var azureClient = new AzureOpenAIClient(
@@ -66,13 +67,13 @@ var chatClient = azureClient.GetChatClient("gpt-35-turbo").AsIChatClient();
 var magiService = new MagiService(chatClient);
 
 // Or specify custom sages
-var customSages = new List<Sage>
+var customSages = new ReadOnlyCollection<Sage>(new List<Sage>
 {
     new Sage("Data-driven logical judgment", chatClient),
     new Sage("Risk-management focused cautious judgment", chatClient),
     new Sage("User-experience focused emotional judgment", chatClient)
-};
-var magiService = new MagiService(chatClient, customSages);
+});
+var magiService = new MagiService(customSages);
 ```
 
 #### 5. Execute Voting
@@ -124,15 +125,16 @@ Access `https://localhost:5001` in your browser to use the web interface.
 
 ### Adding New Sage Personalities
 
-You can customize the sage personalities by modifying the `MagiService` constructor in `MagiSystem.Core/MagiService.cs`:
+You can customize the sage personalities by creating custom sages and passing them to the `MagiService` constructor:
 
 ```csharp
-_sages = sages ?? new List<Sage>()
+var customSages = new ReadOnlyCollection<Sage>(new List<Sage>
 {
     new Sage("Your custom personality description", aiChatClient),
     new Sage("Another personality type", aiChatClient),
     new Sage("Third personality variant", aiChatClient)
-};
+});
+var magiService = new MagiService(customSages);
 ```
 
 ### Extending the System

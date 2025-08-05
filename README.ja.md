@@ -51,6 +51,7 @@ using Microsoft.Extensions.AI;
 using MagiSystem.Core;
 using Azure.AI.OpenAI;
 using Azure;
+using System.Collections.ObjectModel;
 
 // Azure OpenAI クライアントを設定
 var azureClient = new AzureOpenAIClient(
@@ -66,13 +67,13 @@ var chatClient = azureClient.GetChatClient("gpt-35-turbo").AsIChatClient();
 var magiService = new MagiService(chatClient);
 
 // または、カスタム賢者を指定
-var customSages = new List<Sage>
+var customSages = new ReadOnlyCollection<Sage>(new List<Sage>
 {
     new Sage("データ重視の論理的判断", chatClient),
     new Sage("リスク管理を重視する慎重な判断", chatClient),
     new Sage("ユーザー体験を重視する感情的判断", chatClient)
-};
-var magiService = new MagiService(chatClient, customSages);
+});
+var magiService = new MagiService(customSages);
 ```
 
 #### 5. 投票の実行
@@ -124,15 +125,16 @@ dotnet run
 
 ### 新しい賢者人格の追加
 
-`MagiSystem.Core/MagiService.cs` の `MagiService` コンストラクタを修正することで、賢者の人格をカスタマイズできます：
+カスタム賢者を作成し、`MagiService`コンストラクタに渡すことで、賢者の人格をカスタマイズできます：
 
 ```csharp
-_sages = sages ?? new List<Sage>()
+var customSages = new ReadOnlyCollection<Sage>(new List<Sage>
 {
     new Sage("カスタム人格の説明", aiChatClient),
     new Sage("別の人格タイプ", aiChatClient),
     new Sage("第三の人格バリエーション", aiChatClient)
-};
+});
+var magiService = new MagiService(customSages);
 ```
 
 ### システムの拡張

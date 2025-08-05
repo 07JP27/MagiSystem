@@ -1,0 +1,133 @@
+﻿@page "/"
+
+<PageTitle>MagiSystem - Home</PageTitle>
+
+<div class="container mt-4">
+    <div class="hero-section text-center mb-5">
+        <h1 class="display-4 mb-3 fw-bold">
+            Magi System
+        </h1>
+        <p class="lead text-white">
+            3つの異なる人格を持つAI（MAGI）による多数決投票システム
+        </p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">システム概要</h2>
+                    
+                    <p class="card-text">
+                        MagiSystemは、異なる思考パターンを持つ3つのAI（賢者/Sage）による集合知を活用した意思決定支援システムです。
+                        各AIが独自の視点から判断を行い、多数決により最終的な決定を導き出します。
+                    </p>
+
+                    <h4 class="mt-4 mb-3">3人の賢者</h4>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="sage-card p-3 border rounded">
+                                <h5 class="text-primary">
+                                    <i class="fas fa-chart-line me-2"></i>
+                                    論理型
+                                </h5>
+                                <p class="small text-muted">
+                                    論理的・客観的な分析に基づいて判断を行います。
+                                    データとエビデンスを重視します。
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="sage-card p-3 border rounded">
+                                <h5 class="text-warning">
+                                    <i class="fas fa-shield-alt me-2"></i>
+                                    慎重型
+                                </h5>
+                                <p class="small text-muted">
+                                    慎重で保守的、リスク回避を重視した判断を行います。
+                                    安全性と安定性を最優先に考えます。
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="sage-card p-3 border rounded">
+                                <h5 class="text-info">
+                                    <i class="fas fa-heart me-2"></i>
+                                    感情型
+                                </h5>
+                                <p class="small text-muted">
+                                    感情的・直感的な判断や妥協案を提示します。
+                                    人間らしい視点を大切にします。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="/magi-vote" class="btn btn-primary btn-lg">
+                            <i class="fas fa-vote-yea me-2"></i>
+                            投票を開始する
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row my-5">
+        <div class="col-lg-12 mx-auto">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h4 class="card-title text-center mb-3">使用方法</h4>
+                    <div class="row">
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">1</div>
+                            <h6>議題を入力</h6>
+                            <p class="small text-muted">投票したい議題を明確に入力します</p>
+                        </div>
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">2</div>
+                            <h6>判断基準を設定</h6>
+                            <p class="small text-muted">Yes/Noの判断基準を具体的に設定します</p>
+                        </div>
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">3</div>
+                            <h6>投票実行</h6>
+                            <p class="small text-muted">3つのMAGIがそれぞれ判断を行います</p>
+                        </div>
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">4</div>
+                            <h6>結果確認</h6>
+                            <p class="small text-muted">多数決による最終決定と理由を確認します</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-section {
+        padding: 30px 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        margin-bottom: 40px;
+    }
+    
+    .sage-card {
+        height: 100%;
+        transition: transform 0.2s;
+    }
+    
+    .sage-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .step-number {
+        font-weight: bold;
+        font-size: 18px;
+    }
+</style>

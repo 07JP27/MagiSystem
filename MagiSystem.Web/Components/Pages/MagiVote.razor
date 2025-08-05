@@ -1,0 +1,262 @@
+@page "/magi-vote"
+@using MagiSystem.Core
+@inject MagiService MagiService
+@rendermode InteractiveServer
+
+<PageTitle>MAGI投票システム</PageTitle>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">
+                <i class="fas fa-brain me-2"></i>
+                MAGI投票システム
+            </h1>
+            <p class="text-center text-muted mb-5">
+                3つの異なる人格を持つAI（MAGI）による多数決投票システムです
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-vote-yea me-2"></i>
+                        投票設定
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form @onsubmit="SubmitVoteAsync" @onsubmit:preventDefault="true">
+                        <div class="mb-3">
+                            <label for="topic" class="form-label">
+                                <strong>議題</strong>
+                            </label>
+                            <textarea @bind="Topic" class="form-control" id="topic" rows="3" 
+                                      placeholder="投票したい議題を入力してください..." required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="yesCriteria" class="form-label">
+                                <strong>Yes（賛成）の判断基準</strong>
+                            </label>
+                            <textarea @bind="YesCriteria" class="form-control" id="yesCriteria" rows="2" 
+                                      placeholder="どのような場合にYesとするかの基準を入力してください..." required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="noCriteria" class="form-label">
+                                <strong>No（反対）の判断基準</strong>
+                            </label>
+                            <textarea @bind="NoCriteria" class="form-control" id="noCriteria" rows="2" 
+                                      placeholder="どのような場合にNoとするかの基準を入力してください..." required></textarea>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg" disabled="@IsLoading">
+                                @if (IsLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    <span>投票中...</span>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    <span>投票開始</span>
+                                }
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (VoteResult != null)
+    {
+        <div class="row mt-5">
+            <div class="col-lg-12 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-poll me-2"></i>
+                            投票結果
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Final Decision -->
+                        <div class="text-center mb-4">
+                            <div class="final-decision @GetDecisionClass(VoteResult.FinalDecision)">
+                                <h2 class="mb-3">
+                                    最終決定: @GetDecisionText(VoteResult.FinalDecision)
+                                </h2>
+                                <div class="vote-counts">
+                                    <span class="badge bg-success me-2 fs-6">
+                                        <i class="fas fa-thumbs-up me-1"></i>
+                                        Yes: @VoteResult.CountOfYes
+                                    </span>
+                                    <span class="badge bg-danger fs-6">
+                                        <i class="fas fa-thumbs-down me-1"></i>
+                                        No: @VoteResult.CountOfNo
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Yes Reasons -->
+                        @if (VoteResult.YesReasons.Any())
+                        {
+                            <div class="mb-4">
+                                <h4 class="text-success">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    賛成理由
+                                </h4>
+                                @foreach (var reason in VoteResult.YesReasons)
+                                {
+                                    <div class="alert alert-success">
+                                        <i class="fas fa-quote-left me-2"></i>
+                                        @reason
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <!-- No Reasons -->
+                        @if (VoteResult.NoReasons.Any())
+                        {
+                            <div class="mb-4">
+                                <h4 class="text-danger">
+                                    <i class="fas fa-times-circle me-2"></i>
+                                    反対理由
+                                </h4>
+                                @foreach (var reason in VoteResult.NoReasons)
+                                {
+                                    <div class="alert alert-danger">
+                                        <i class="fas fa-quote-left me-2"></i>
+                                        @reason
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <div class="text-center">
+                            <button class="btn btn-outline-primary" @onclick="ResetForm">
+                                <i class="fas fa-redo me-2"></i>
+                                新しい投票
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .final-decision {
+        padding: 20px;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+    
+    .decision-yes {
+        background-color: #d4edda;
+        border: 2px solid #28a745;
+        color: #155724;
+    }
+    
+    .decision-no {
+        background-color: #f8d7da;
+        border: 2px solid #dc3545;
+        color: #721c24;
+    }
+    
+    .decision-tie {
+        background-color: #fff3cd;
+        border: 2px solid #ffc107;
+        color: #856404;
+    }
+    
+    .vote-counts {
+        font-size: 1.1rem;
+    }
+    
+    .card {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+</style>
+
+@code {
+    private string Topic = "";
+    private string YesCriteria = "";
+    private string NoCriteria = "";
+    private bool IsLoading = false;
+    private MagiResponse? VoteResult = null;
+
+    private async Task SubmitVoteAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Topic) || 
+            string.IsNullOrWhiteSpace(YesCriteria) || 
+            string.IsNullOrWhiteSpace(NoCriteria))
+        {
+            return;
+        }
+
+        IsLoading = true;
+        VoteResult = null;
+        StateHasChanged();
+
+        try
+        {
+            var voteOption = new VoteOption(Topic, YesCriteria, NoCriteria);
+            VoteResult = await MagiService.MajorityVoteAsync(voteOption);
+        }
+        catch (Exception ex)
+        {
+            // In a real application, you would handle this more gracefully
+            Console.WriteLine($"Error during voting: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ResetForm()
+    {
+        Topic = "";
+        YesCriteria = "";
+        NoCriteria = "";
+        VoteResult = null;
+        StateHasChanged();
+    }
+
+    private string GetDecisionClass(FinalDecisionEnum decision)
+    {
+        return decision switch
+        {
+            FinalDecisionEnum.Yes => "decision-yes",
+            FinalDecisionEnum.No => "decision-no",
+            FinalDecisionEnum.Tie => "decision-tie",
+            _ => "decision-tie"
+        };
+    }
+
+    private string GetDecisionText(FinalDecisionEnum decision)
+    {
+        return decision switch
+        {
+            FinalDecisionEnum.Yes => "承認",
+            FinalDecisionEnum.No => "否決",
+            FinalDecisionEnum.Tie => "引き分け",
+            _ => "不明"
+        };
+    }
+}

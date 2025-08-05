@@ -1,20 +1,26 @@
-﻿using System.Net;
+﻿using System.Collections.ObjectModel;
+using System.Net;
 using Microsoft.Extensions.AI;
 
 namespace MagiSystem.Core;
 
 public class MagiService
 {
-    private readonly List<Sage> _sages;
+    private readonly ReadOnlyCollection<Sage> _sages;
 
-    public MagiService(IChatClient aiChatClient, List<Sage>? sages = null)
+    public MagiService(IChatClient aiChatClient)
     {
-        _sages = sages ?? new List<Sage>()
-        {
+        _sages = new ReadOnlyCollection<Sage>(
+        [
             new Sage("論理・客観的な分析に偏る判断", aiChatClient),
             new Sage("慎重で保守的、リスク回避型", aiChatClient),
             new Sage("感情的・直感的な判断や妥協を提示", aiChatClient)
-        };
+        ]);
+    }
+
+    public MagiService(ReadOnlyCollection<Sage> sages)
+    {
+        _sages = sages;
     }
 
 

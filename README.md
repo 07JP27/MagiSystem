@@ -35,20 +35,31 @@ dotnet add reference path/to/MagiSystem.Core
 # dotnet add package MagiSystem.Core
 ```
 
-#### 2. Configure Azure OpenAI Client
+#### 2. Install Required NuGet Packages
+
+```bash
+# Add required packages for Azure OpenAI integration
+dotnet add package Azure.AI.OpenAI
+dotnet add package Microsoft.Extensions.AI
+dotnet add package Microsoft.Extensions.AI.OpenAI
+```
+
+#### 3. Configure Azure OpenAI Client
 
 ```csharp
 using Microsoft.Extensions.AI;
 using MagiSystem.Core;
+using Azure.AI.OpenAI;
+using Azure;
 
 // Configure Azure OpenAI client
-var chatClient = new AzureOpenAIClient(
+var azureClient = new AzureOpenAIClient(
     new Uri("https://your-resource.openai.azure.com/"),
-    new AzureKeyCredential("your-api-key"))
-    .AsChatClient("gpt-35-turbo");
+    new AzureKeyCredential("your-api-key"));
+var chatClient = azureClient.GetChatClient("gpt-35-turbo").AsIChatClient();
 ```
 
-#### 3. Create MagiService Instance
+#### 4. Create MagiService Instance
 
 ```csharp
 // Create MagiService with default three sages
@@ -64,7 +75,7 @@ var customSages = new List<Sage>
 var magiService = new MagiService(chatClient, customSages);
 ```
 
-#### 4. Execute Voting
+#### 5. Execute Voting
 
 ```csharp
 // Create vote option

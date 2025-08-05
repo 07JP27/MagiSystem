@@ -35,20 +35,31 @@ dotnet add reference path/to/MagiSystem.Core
 # dotnet add package MagiSystem.Core
 ```
 
-#### 2. Azure OpenAI クライアントの設定
+#### 2. 必要なNuGetパッケージのインストール
+
+```bash
+# Azure OpenAI 統合に必要なパッケージを追加
+dotnet add package Azure.AI.OpenAI
+dotnet add package Microsoft.Extensions.AI
+dotnet add package Microsoft.Extensions.AI.OpenAI
+```
+
+#### 3. Azure OpenAI クライアントの設定
 
 ```csharp
 using Microsoft.Extensions.AI;
 using MagiSystem.Core;
+using Azure.AI.OpenAI;
+using Azure;
 
 // Azure OpenAI クライアントを設定
-var chatClient = new AzureOpenAIClient(
+var azureClient = new AzureOpenAIClient(
     new Uri("https://your-resource.openai.azure.com/"),
-    new AzureKeyCredential("your-api-key"))
-    .AsChatClient("gpt-35-turbo");
+    new AzureKeyCredential("your-api-key"));
+var chatClient = azureClient.GetChatClient("gpt-35-turbo").AsIChatClient();
 ```
 
-#### 3. MagiServiceインスタンスの作成
+#### 4. MagiServiceインスタンスの作成
 
 ```csharp
 // デフォルトの3つの賢者でMagiServiceを作成
@@ -64,7 +75,7 @@ var customSages = new List<Sage>
 var magiService = new MagiService(chatClient, customSages);
 ```
 
-#### 4. 投票の実行
+#### 5. 投票の実行
 
 ```csharp
 // 投票オプションを作成

@@ -9,7 +9,7 @@ A decision support system inspired by the MAGI system from Neon Genesis Evangeli
 MagiSystem leverages the collective intelligence of three AI agents (Sages), each with distinct thinking patterns, to support decision-making through democratic voting. Each AI analyzes the given topic from their unique perspective and casts a vote, with the final decision determined by majority rule.
 
 ### The Three Sages
-
+Default personalities include:
 - **🧠 Logic-type**: Makes decisions based on logical and objective analysis, emphasizing data and evidence
 - **🛡️ Cautious-type**: Takes a conservative, risk-averse approach, prioritizing safety and stability  
 - **❤️ Emotional-type**: Provides emotionally-driven and intuitive judgments, offering human-like perspectives and compromise solutions

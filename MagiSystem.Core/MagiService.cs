@@ -38,8 +38,8 @@ public class MagiService
             FinalDecision: DetermineFinalDecision(results),
             CountOfYes: results.Count(r => r.VoteResult == VoteEnum.Yes),
             CountOfNo: results.Count(r => r.VoteResult == VoteEnum.No),
-            YesReasons: results.Where(r => r.VoteResult == VoteEnum.Yes).Select(r => new VoteReason(r.Personality, r.Reason)).ToList(),
-            NoReasons: results.Where(r => r.VoteResult == VoteEnum.No).Select(r => new VoteReason(r.Personality, r.Reason)).ToList()
+            YesResponses: results.Where(r => r.VoteResult == VoteEnum.Yes).ToList(),
+            NoResponses: results.Where(r => r.VoteResult == VoteEnum.No).ToList()
         );
 
         return response;

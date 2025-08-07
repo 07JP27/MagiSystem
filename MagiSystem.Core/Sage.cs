@@ -2,22 +2,20 @@ using Microsoft.Extensions.AI;
 
 namespace MagiSystem.Core;
 
-public class Sage
+public class Sage(string personality, IChatClient aiChatClient)
 {
     private static readonly ChatOptions _voteChatOption = new()
     {
-        ResponseFormat = ChatResponseFormat.ForJsonSchema(AIJsonUtilities.CreateJsonSchema(typeof(SageResponse))),
+        ResponseFormat = ChatResponseFormat.ForJsonSchema(AIJsonUtilities.CreateJsonSchema(typeof(InternalSageResponse))),
     };
-    private readonly string _systemPrompt;
-    private readonly IChatClient _aiChatClient;
-    public Sage(string personality, IChatClient aiChatClient)
-    {
-        _systemPrompt = $"""
+
+    private record InternalSageResponse(VoteEnum VoteResult, string Reason);
+
+    private readonly string _systemPrompt = $"""
         あなたは合議制における投票権を持つ一人の賢者です。与えられた議題に対して投票を行うことが求められます。
         あなたのパーソナリティは「{personality}」です。必ずこのパーソナリティに従って行動してください。
         """;
-        _aiChatClient = aiChatClient;
-    }
+
     public async Task<SageResponse> VoteAsync(VoteOption option)
     {
         var messages = new List<ChatMessage>
@@ -26,7 +24,7 @@ public class Sage
             new ChatMessage(ChatRole.User, GetUserMessage(option))
         };
 
-        var result = await _aiChatClient.GetResponseAsync<SageResponse>(messages, _voteChatOption);
+        var result = await aiChatClient.GetResponseAsync<InternalSageResponse>(messages, _voteChatOption);
         if (result.FinishReason != ChatFinishReason.Stop)
         {
             throw new InvalidOperationException($"AI chat completion failed with finish reason: {result.FinishReason}");
@@ -38,7 +36,7 @@ public class Sage
             throw new InvalidOperationException($"Failed to parse AI response to GenerateQueryResponse. Raw response: {result.Text}");
         }
 
-        return sageVoteResponse;
+        return new(personality, sageVoteResponse.VoteResult, sageVoteResponse.Reason);
     }
 
 

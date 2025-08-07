@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Net;
 using Microsoft.Extensions.AI;
 
 namespace MagiSystem.Core;
@@ -39,8 +38,8 @@ public class MagiService
             FinalDecision: DetermineFinalDecision(results),
             CountOfYes: results.Count(r => r.VoteResult == VoteEnum.Yes),
             CountOfNo: results.Count(r => r.VoteResult == VoteEnum.No),
-            YesReasons: results.Where(r => r.VoteResult == VoteEnum.Yes).Select(r => r.Reason).ToList(),
-            NoReasons: results.Where(r => r.VoteResult == VoteEnum.No).Select(r => r.Reason).ToList()
+            YesResponses: results.Where(r => r.VoteResult == VoteEnum.Yes).ToList(),
+            NoResponses: results.Where(r => r.VoteResult == VoteEnum.No).ToList()
         );
 
         return response;

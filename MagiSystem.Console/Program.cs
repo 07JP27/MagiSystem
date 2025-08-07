@@ -65,22 +65,26 @@ static void DisplayResult(MagiResponse response)
     System.Console.WriteLine($"No票: {response.CountOfNo}票");
     System.Console.WriteLine();
     
-    if (response.YesReasons.Any())
+    if (response.YesResponses.Any())
     {
         System.Console.WriteLine("【Yes理由】");
-        foreach (var reason in response.YesReasons)
+        foreach (var reason in response.YesResponses)
         {
-            System.Console.WriteLine($"• {reason}");
+            System.Console.WriteLine($"• {reason.Personality}");
+            System.Console.WriteLine($"{reason.Reason}");
+            System.Console.WriteLine($"----------------------");
         }
         System.Console.WriteLine();
     }
     
-    if (response.NoReasons.Any())
+    if (response.NoResponses.Any())
     {
         System.Console.WriteLine("【No理由】");
-        foreach (var reason in response.NoReasons)
+        foreach (var reason in response.NoResponses)
         {
-            System.Console.WriteLine($"• {reason}");
+            System.Console.WriteLine($"• {reason.Personality}");
+            System.Console.WriteLine($"{reason.Reason}");
+            System.Console.WriteLine($"----------------------");
         }
         System.Console.WriteLine();
     }

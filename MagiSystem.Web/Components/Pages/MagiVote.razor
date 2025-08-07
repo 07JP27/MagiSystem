@@ -105,36 +105,38 @@
                         </div>
 
                         <!-- Yes Reasons -->
-                        @if (VoteResult.YesReasons.Any())
+                        @if (VoteResult.YesResponses.Any())
                         {
                             <div class="mb-4">
                                 <h4 class="text-success">
                                     <i class="fas fa-check-circle me-2"></i>
                                     賛成理由
                                 </h4>
-                                @foreach (var reason in VoteResult.YesReasons)
+                                @foreach (var reason in VoteResult.YesResponses)
                                 {
                                     <div class="alert alert-success">
                                         <i class="fas fa-quote-left me-2"></i>
-                                        @reason
+                                        @reason.Personality <br/>
+                                        @reason.Reason
                                     </div>
                                 }
                             </div>
                         }
 
                         <!-- No Reasons -->
-                        @if (VoteResult.NoReasons.Any())
+                        @if (VoteResult.NoResponses.Any())
                         {
                             <div class="mb-4">
                                 <h4 class="text-danger">
                                     <i class="fas fa-times-circle me-2"></i>
                                     反対理由
                                 </h4>
-                                @foreach (var reason in VoteResult.NoReasons)
+                                @foreach (var reason in VoteResult.NoResponses)
                                 {
                                     <div class="alert alert-danger">
                                         <i class="fas fa-quote-left me-2"></i>
-                                        @reason
+                                        @reason.Personality <br/>
+                                        @reason.Reason
                                     </div>
                                 }
                             </div>

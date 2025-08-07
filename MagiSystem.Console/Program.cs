@@ -71,7 +71,7 @@ static void DisplayResult(MagiResponse response)
         foreach (var reason in response.YesResponses)
         {
             System.Console.WriteLine($"• {reason.Personality}");
-            System.Console.WriteLine($"{reason.ReasonText}");
+            System.Console.WriteLine($"{reason.Reason}");
             System.Console.WriteLine($"----------------------");
         }
         System.Console.WriteLine();
@@ -83,7 +83,7 @@ static void DisplayResult(MagiResponse response)
         foreach (var reason in response.NoResponses)
         {
             System.Console.WriteLine($"• {reason.Personality}");
-            System.Console.WriteLine($"{reason.ReasonText}");
+            System.Console.WriteLine($"{reason.Reason}");
             System.Console.WriteLine($"----------------------");
         }
         System.Console.WriteLine();
